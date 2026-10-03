@@ -232,14 +232,4 @@
   // 8. 輸出內文
   // ──────────────────────────────────────────────
   body
-
-  // ──────────────────────────────────────────────
-  // 9. 參考文獻
-  // ──────────────────────────────────────────────
-  show bibliography: set heading(outlined: false)
-  bibliography(
-    "ref.yml",
-    style: "chicago-shortened-notes",
-    title: "參考文獻",
-  )
 }
