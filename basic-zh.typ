@@ -20,32 +20,15 @@
   title-thanks: none, // 標題註解（如：本文為某計畫成果）
   subtitle: none, // 副標題，預設 none
 
-  // ── 英文標題區 (均得免填) ──
-  title-en: none,
-  title-en-thanks: none, // 英文標題註解
-  subtitle-en: none,
-
   // ── 作者區（中文） ──
   // 每位作者為一個 dict：(name: "姓名", thanks: "職銜或說明")
   // 若不需要 thanks，可僅傳字串，或傳 (name: "姓名", thanks: none)
   authors: (),
 
-  // ── 作者區（英文） ──
-  authors-en: (),
-
-  // ── 摘要與關鍵字（中文） ──
-  abstract-zh: [],
-  keywords-zh: none, // 字串，例如 "公法、教育法、比例原則"
-
-  // ── 摘要與關鍵字（英文） ──
-  abstract-en: [],
-  keywords-en: none, // 字串，例如 "Public Law, Education Law"
-
   body,
 ) = {
-  // ── 正規化 authors / authors-en 為陣列（相容純字串、單一 dict、陣列三種傳入方式） ──
+  // ── 正規化 authors 為陣列（相容純字串、單一 dict、陣列三種傳入方式） ──
   let authors-arr = if type(authors) == array { authors } else { (authors,) }
-  let authors-en-arr = if type(authors-en) == array { authors-en } else { (authors-en,) }
 
   // ── 取出作者姓名（用於 PDF 元資料） ──
   let author-names = authors-arr.map(a => {
@@ -174,11 +157,8 @@
         set par(first-line-indent: 0em)
         displayed
       }
-    } else if it.body == [摘要] {
-      // 模仿《臺大法學論叢》排版：中文摘要標題改為「<摘要>」字樣、楷體置中
-      align(center, text(font: font-kai, weight: "regular", "<摘要>"))
     } else {
-      // 無編號標題（Abstract、目錄、參考文獻）
+      // 無編號標題（目錄、參考文獻）
       // 直接輸出，讓字體、大小、對齊沿用有編號標題的 show heading 設定
       it
     }
@@ -207,7 +187,7 @@
   }
 
   // ──────────────────────────────────────────────
-  // 5. 中文封面頁（標題 + 作者 + 中文摘要 + 關鍵字）
+  // 5. 中文封面頁（標題 + 作者）
   // ──────────────────────────────────────────────
   align(center)[
     // 主標題（含標題 thanks）
@@ -229,75 +209,10 @@
     #render-authors(authors-arr)
   ]
 
-  // 中文摘要區塊
-  if abstract-zh != [] {
-    v(1.5em)
-    // 使用無編號標題呈現「摘要」，樣式與內文標題一致
-    heading(level: 1, numbering: none)[摘要]
-    v(0.5em)
-    // 中文摘要字體大小與內文相同（12pt）
-    set par(first-line-indent: 2em)
-    abstract-zh
-    if keywords-zh != none {
-      v(0.5em)
-      text(font: font-kai)[#text(weight: "bold")[關鍵字：]#keywords-zh]
-    }
-  }
-
-  pagebreak()
-
   // ──────────────────────────────────────────────
-  // 6. 英文封面頁（英文標題 + 作者 + 英文摘要 + 關鍵字）
+  // 6. 目錄（與中文標題同頁）
   // ──────────────────────────────────────────────
-  if title-en != none and title-en != "" {
-    align(center)[
-      // 英文主標題（含 thanks）
-      #block(
-        text(font: font-hei, weight: 700, size: 1.75em)[
-          #title-en#if title-en-thanks != none and title-en-thanks != "" { footnote(title-en-thanks) }
-        ],
-      )
-
-      // 英文副標題
-      #if subtitle-en != none and subtitle-en != "" [
-        #v(0.5em)
-        #block(text(font: font-hei, weight: "bold", size: 1.25em, subtitle-en))
-      ]
-
-      #v(1em)
-
-      // 英文作者
-      #if authors-en-arr.len() > 0 {
-        render-authors(authors-en-arr)
-      } else {
-        render-authors(authors-arr)
-      }
-    ]
-
-    // 英文摘要
-    if abstract-en != [] {
-      v(1.5em)
-      heading(level: 1, numbering: none)[Abstract]
-      v(0.5em)
-      // 英文摘要維持較小字體，但行距縮小
-      pad(x: 2em)[
-        #set text(size: 10pt)
-        #set par(leading: 0.8em, first-line-indent: 0em)
-        #abstract-en
-        #if keywords-en != none {
-          v(0.3em)
-          text(weight: "bold")[Keywords: ]
-          keywords-en
-        }
-      ]
-    }
-
-    // pagebreak()
-  }
-
-  // ──────────────────────────────────────────────
-  // 7. 目錄頁（獨立一頁）
-  // ──────────────────────────────────────────────
+  v(1.5em)
   // heading(level: 1, numbering: none)[目錄]
   // v(0.5em)
   outline(indent: auto, depth: 3)
@@ -305,7 +220,7 @@
   pagebreak()
 
   // ──────────────────────────────────────────────
-  // 8. 超連結樣式
+  // 7. 超連結樣式
   // ──────────────────────────────────────────────
   // citrus 的 show cite 規則會把引用（含 ncite 的 prose 形式）
   // 包成 link(label(...))，即使 auto-links: false 也無法取消該
@@ -314,12 +229,12 @@
   show link: it => it.body
 
   // ──────────────────────────────────────────────
-  // 9. 輸出內文
+  // 8. 輸出內文
   // ──────────────────────────────────────────────
   body
 
   // ──────────────────────────────────────────────
-  // 10. 參考文獻
+  // 9. 參考文獻
   // ──────────────────────────────────────────────
   show bibliography: set heading(outlined: false)
   bibliography(
