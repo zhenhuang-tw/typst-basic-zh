@@ -8,7 +8,8 @@
 // 引用樣式：行內引用【範例：#inquote[被引用之文字]】
 #let inquote(content) = text(font: font-kai, content)
 
-
+// Chinese Fonts Fake Bold
+#import "@preview/cuti:0.4.0": show-cn-fakebold
 
 // ============================================================
 // § 主模板函式
