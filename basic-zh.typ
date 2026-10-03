@@ -62,7 +62,7 @@
   // 1. 基本頁面設定
   set page(
     paper: "a4",
-    margin: (x: 2.5cm, y: 2.5cm),
+    margin: (x: 3cm, y: 2.5cm),
     numbering: "1",
     number-align: center,
   )
@@ -75,7 +75,14 @@
     region: "tw",
   )
 
-  set par(first-line-indent: 2em, leading: 1.2em, justify: true)
+  show: show-cn-fakebold
+
+  set par(
+    first-line-indent: 2em,
+    leading: 1.2em,
+    justify: true,
+    spacing: 1.6em,
+  )
 
   // 區塊引用
 
@@ -111,9 +118,9 @@
       width: 100%,
       inset: (bottom: 0.6em),
       grid(
-        columns: (1.5em, 1fr),
+        columns: (1.25em, 1fr),
         // 1.5em 為左側懸掛區塊寬度，放編號；1fr 為右側內容區塊寬度
-        text(font: font-hei)[#super[#num]],
+        text(font: font-hei)[#super[#counter(footnote).display(at: loc)]],
         // 左欄：黑體字、上標數字
         it.note.body,
         // 右欄：註腳內文
@@ -166,8 +173,11 @@
         set par(first-line-indent: 0em)
         displayed
       }
+    } else if it.body == [摘要] {
+      // 模仿《臺大法學論叢》排版：中文摘要標題改為「<摘要>」字樣、楷體置中
+      align(center, text(font: font-kai, weight: "regular", "<摘要>"))
     } else {
-      // 無編號標題（摘要、Abstract、目錄、參考文獻）
+      // 無編號標題（Abstract、目錄、參考文獻）
       // 直接輸出，讓字體、大小、對齊沿用有編號標題的 show heading 設定
       it
     }
@@ -222,27 +232,28 @@
   if abstract-zh != [] {
     v(1.5em)
     // 使用無編號標題呈現「摘要」，樣式與內文標題一致
-    heading(level: 1, numbering: none, outlined: false)[摘要]
+    heading(level: 1, numbering: none)[摘要]
     v(0.5em)
     // 中文摘要字體大小與內文相同（12pt）
     set par(first-line-indent: 2em)
     abstract-zh
     if keywords-zh != none {
       v(0.5em)
-      text(weight: "bold")[關鍵字：]
-      keywords-zh
+      text(font: font-kai)[#text(weight: "bold")[關鍵字：]#keywords-zh]
     }
   }
+
+  pagebreak()
 
   // ──────────────────────────────────────────────
   // 6. 英文封面頁（英文標題 + 作者 + 英文摘要 + 關鍵字）
   // ──────────────────────────────────────────────
-  if title-en != none {
+  if title-en != none and title-en != "" {
     align(center)[
       // 英文主標題（含 thanks）
       #block(
         text(font: font-hei, weight: 700, size: 1.75em)[
-          #title-en#if title-en-thanks != none { footnote(title-en-thanks) }
+          #title-en#if title-en-thanks != none and title-en-thanks != "" { footnote(title-en-thanks) }
         ],
       )
 
@@ -295,8 +306,11 @@
   // ──────────────────────────────────────────────
   // 8. 超連結樣式
   // ──────────────────────────────────────────────
-  show link: set text(fill: blue, weight: 700)
-  show link: underline
+  // citrus 的 show cite 規則會把引用（含 ncite 的 prose 形式）
+  // 包成 link(label(...))，即使 auto-links: false 也無法取消該
+  // 引用→參考文獻的內部超連結。此處直接展開為內文，避免註腳內
+  // 引用仍出現藍色底線的超連結。
+  show link: it => it.body
 
   // ──────────────────────────────────────────────
   // 9. 輸出內文
