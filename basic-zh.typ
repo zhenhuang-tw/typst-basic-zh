@@ -14,12 +14,17 @@
 ]
 // 重點強調
 #let keyword(content) = [
-  #set text(font: font-hei, weight: bold)
+  #set text(weight: "bold")
+  #content
+]
+// 非常重點強調
+#let very-keyword(content) = [
+  #set text(font: font-hei, weight: "bold")
   #content
 ]
 // 教學設例
 #let hypo(content) = [
-  #set text(font: font-yuan)
+  #set text(font: font-yuan, weight: "light") // 因「台灣圓體」字重偏重
   #content
 ]
 // 個人想法
