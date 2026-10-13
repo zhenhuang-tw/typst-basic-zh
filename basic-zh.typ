@@ -4,9 +4,29 @@
 #let font-song = ("Times New Roman", "PMingLiU")
 #let font-hei = ("Arial", "Microsoft JhengHei UI")
 #let font-kai = ("Times New Roman", "DFKai-SB")
+#let font-yuan = ("TaiwanPearl", "Arial", "Microsoft JhengHei UI") // 來自 https://github.com/max32002/TaiwanPearl
+#let font-fsong = ("Zhuque Fangsong (technical preview)", "Times New Roman", "PMingLiU") // 來自 https://github.com/TrionesType/zhuque
 
 // 引用樣式：行內引用【範例：#inquote[被引用之文字]】
-#let inquote(content) = text(font: font-kai, content)
+#let inquote(content) = [
+  #set text(font: font-kai)
+  #content
+]
+// 重點強調
+#let keyword(content) = [
+  #set text(font: font-hei, weight: bold)
+  #content
+]
+// 教學設例
+#let hypo(content) = [
+  #set text(font: font-yuan)
+  #content
+]
+// 個人想法
+#let thought(content) = [
+  #set text(font: font-fsong)
+  #content
+]
 
 // Chinese Fonts Fake Bold
 #import "@preview/cuti:0.4.0": show-cn-fakebold
@@ -62,19 +82,28 @@
   show: show-cn-fakebold
 
   set par(
-    first-line-indent: 2em,
+    first-line-indent: 0em, // 取消首行縮排（本文件多為編號清單）
     leading: 1.2em,
     justify: true,
     spacing: 1.6em,
   )
 
   // 區塊引用
+  show quote.where(block: true): it => text(font: font-kai, it)
 
-  show quote.where(block: true): it => {
-    text(font: font-kai, it)
-    v(-1em) // 抵銷多餘間距
-    par(text(size: 0pt, "")) // 插入不可見的假段落，迫使下段恢復首行縮排
-  }
+  // ──────────────────────────────────────────────
+  // 編號清單：依層級採臺灣公文常用格式
+  //   1. → (1) → A. → (A) → a. → (a)
+  // ──────────────────────────────────────────────
+  set enum(
+    full: true,
+    numbering: (..nums) => {
+      let n = nums.pos()
+      let pats = ("1.", "(1)", "A.", "(A)", "a.", "(a)")
+      numbering(pats.at(calc.min(n.len(), pats.len()) - 1), n.last())
+    },
+  )
+  set list(marker: ([•], [▪], [◆]))
 
   // 圖說
   show figure.caption: set text(font: font-kai)
