@@ -174,9 +174,9 @@
   context {
     let entries = get-cited-entries()
 
-    let fr = entries.filter(e => e.lang == "en")
+    let en = entries.filter(e => e.lang == "en")
     heading(level: 2, outlined: false)[英文文獻]
-    for e in fr [
+    for e in en [
       #e.rendered-body #e.ref-label
       #parbreak()
     ]
@@ -192,7 +192,7 @@
     ]
 
     let others = entries.filter(e => {
-      not (e.lang == "fr" or (e.lang == "zh" and e.entry-type == "article"))
+      not (e.lang == "en" or (e.lang == "zh" and e.entry-type == "article"))
     })
     heading(level: 3, outlined: false)[其他]
     for e in others [
