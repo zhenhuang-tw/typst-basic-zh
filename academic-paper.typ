@@ -171,6 +171,9 @@
 
   // ── 參考文獻 / Bibliography ──
   heading(level: 1, numbering: none, outlined: false)[參考文獻]
+  // 無編號的第一層標題不會推進計數器；歸零後，下方分類才會從「一、」「(一)」重新起算
+  // An unnumbered level-1 heading does not step the counter; reset it so the groups below restart at 一、 and (一)
+  counter(heading).update(0)
   context {
     let entries = get-cited-entries()
 
