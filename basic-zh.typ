@@ -1,4 +1,6 @@
 // basic-zh.typ
+// Document in Traditional Chinese:
+// https://codeberg.org/zhenhuang/typst-basic-zh/src/branch/main/README-zh.md
 
 // 字體定義（方便未來抽換特定字型）
 // Font definitions (makes it easy to swap specific fonts later)
