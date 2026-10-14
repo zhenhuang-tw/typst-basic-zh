@@ -170,37 +170,36 @@
   body
 
   // ── 參考文獻 / Bibliography ──
-  heading(level: 1, numbering: none, outlined: false)[參考文獻]
-  // 無編號的第一層標題不會推進計數器；歸零後，下方分類才會從「一、」「(一)」重新起算
-  // An unnumbered level-1 heading does not step the counter; reset it so the groups below restart at 一、 and (一)
-  counter(heading).update(0)
+  // 沒有任何文獻的分類不輸出標題；完全沒有引用時，整個參考文獻章節都不輸出
+  // Groups without entries are omitted; with no citations at all, the whole section is omitted
   context {
     let entries = get-cited-entries()
+    if entries.len() == 0 { return }
+
+    let group(level, title, items) = if items.len() > 0 {
+      heading(level: level, outlined: false, title)
+      for e in items [
+        #e.rendered-body #e.ref-label
+        #parbreak()
+      ]
+    }
 
     let en = entries.filter(e => e.lang == "en")
-    heading(level: 2, outlined: false)[英文文獻]
-    for e in en [
-      #e.rendered-body #e.ref-label
-      #parbreak()
-    ]
-
-    let zh = entries.filter(e => e.lang == "zh")
-    heading(level: 2, outlined: false)[中文文獻]
-
-    let zh-journal = zh.filter(e => e.entry-type == "article")
-    heading(level: 3, outlined: false)[期刊論文]
-    for e in zh-journal [
-      #e.rendered-body #e.ref-label
-      #parbreak()
-    ]
-
+    let zh-journal = entries.filter(e => e.lang == "zh" and e.entry-type == "article")
     let others = entries.filter(e => {
       not (e.lang == "en" or (e.lang == "zh" and e.entry-type == "article"))
     })
-    heading(level: 3, outlined: false)[其他]
-    for e in others [
-      #e.rendered-body #e.ref-label
-      #parbreak()
-    ]
+
+    heading(level: 1, numbering: none, outlined: false)[參考文獻]
+    // 無編號的第一層標題不會推進計數器；歸零後，下方分類才會從「一、」「(一)」重新起算
+    // An unnumbered level-1 heading does not step the counter; reset it so the groups below restart at 一、 and (一)
+    counter(heading).update(0)
+
+    group(2, [英文文獻], en)
+    if zh-journal.len() + others.len() > 0 {
+      heading(level: 2, outlined: false)[中文文獻]
+      group(3, [期刊論文], zh-journal)
+      group(3, [其他], others)
+    }
   }
 }
