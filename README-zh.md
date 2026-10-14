@@ -50,6 +50,30 @@
 
 > 提示：開發時可用 `typst watch note.typ` 讓 Typst 監看檔案異動並自動重新編譯。
 
+## Submodule 更新方式
+
+當 Git Submodule 有更新時，主專案需要拉取最新的 Submodule 程式碼，並在主專案中重新記錄該 Submodule 的新 Commit 指向。
+
+1. 進入 Submodule 資料夾並更新：
+
+   ```bash
+   cd <submodule_path>
+   git checkout main   # 本 submodule 的目標分支即為 main
+   git pull origin main
+   ```
+
+2. 回到主專案根目錄：
+   ```bash
+   cd ..
+   ```
+3. 在主專案中確認並提交更新：
+   主專案只會記錄 Submodule 的特定 Commit 參考點。執行 git status 會看到 Submodule 有新內容，接著將它加入版控並提交：
+   ```bash
+   git add <submodule_path>
+   git commit -m "chore(tpl): update submodule to latest commit"
+   git push origin main
+   ```
+
 ## `project` 參數說明
 
 `project` 是模板的主函式，以 `#show: project.with(...)` 套用到整份文件。
