@@ -6,7 +6,7 @@ Traditional Chinese templates for [Typst](https://typst.app/), with three entry 
 | -------------------- | ---------------------------------------------------------- | ------------------------------------- |
 | `basic-note.typ`     | Class notes, reading summaries, draft documents, articles  | Optional; native Typst, footnotes only |
 | `large-note.typ`     | Year-long notes and long reports, with chapters above 壹、 | Same as above                         |
-| `academic-paper.typ` | Journal papers: bilingual cover, abstracts, bibliography   | Required; citrus with a note-style CSL |
+| `academic-paper.typ` | Journal papers: bilingual cover, abstracts, bibliography   | Required; citrus with a note-style CSL; BibTeX or CSL-JSON |
 
 All three share fonts, inline styles, footnotes, and heading numbering from `common.typ`. `common.typ` is not an entry point; do not import it directly.
 
@@ -63,7 +63,7 @@ typst compile note.typ
 #import "typst-basic-zh/academic-paper.typ": *
 
 #show: project.with(
-  bib: read("ref.bib"),
+  bib: "/ref.bib",                  // or "/references.json"
   csl: read("my-style.csl"),
   title: "論公法上之比例原則",
   authors: (name: "黃某", thanks: "NTU College of Law"),
@@ -77,19 +77,22 @@ typst compile note.typ
 
 Inside a footnote, cite with `#ncite("key", "頁5", prefix: "...", suffix: "...")` instead of `@key`, which would nest a footnote inside the footnote.
 
+`bib` is a path; its extension decides the format: `.json` is CSL-JSON, anything else is BibTeX. A leading UTF-8 BOM is stripped.
+
 The bibliography is grouped into 英文文獻, then 中文文獻 with 期刊論文 and 其他. Empty groups are omitted.
 
-## Why file contents instead of paths
+## Paths in a submodule
 
-Typst resolves a path against the file that uses it, which here is the template. When the template is a submodule, `bib: "ref.yml"` therefore points to `typst-basic-zh/ref.yml`. Read the file in your own document and pass the contents:
+Typst resolves a path against the file that reads it, which here is the template. When the template is a submodule, `bib: "ref.yml"` therefore points to `typst-basic-zh/ref.yml`. Either read the file in your own document and pass the contents, or pass a path starting with `/`, which resolves against the project root:
 
 - notes: `read("ref.yml", encoding: none)`
-- paper: `read("ref.bib")` and `read("style.csl")`
+- paper: `bib: "/ref.bib"` or `bib: "/references.json"`, and `csl: read("style.csl")`
 
 ## Migrating
 
 - `basic-zh.typ` has been removed. Import `basic-note.typ` instead, or `large-note.typ` if you set `isLargeReport: true`, and drop that parameter.
 - If you used the standalone `template_basicPaper.typ`, import `academic-paper.typ` instead and add the `bib` and `csl` parameters.
+- `academic-paper.typ` now takes `bib` as a path: replace `bib: read("ref.bib")` with `bib: "/ref.bib"`.
 
 ## Updating the submodule
 

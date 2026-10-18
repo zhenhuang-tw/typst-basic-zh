@@ -2,11 +2,11 @@
 
 適用於 [Typst](https://typst.app/) 的繁體中文排版模板，提供三個入口檔：
 
-| 入口檔               | 用途                                         | 引註方式                   |
-| -------------------- | -------------------------------------------- | -------------------------- |
-| `basic-note.typ`     | 課堂筆記、讀書摘要、公文草稿、單篇文章       | 選用；Typst 原生，僅隨頁註 |
-| `large-note.typ`     | 整學年筆記、長篇報告：在「壹、」之上分「章」 | 同上                       |
-| `academic-paper.typ` | 投稿用學術論文：中英封面、摘要、參考文獻     | 必用；citrus + note 式 CSL |
+| 入口檔               | 用途                                         | 引註方式                                       |
+| -------------------- | -------------------------------------------- | ---------------------------------------------- |
+| `basic-note.typ`     | 課堂筆記、讀書摘要、公文草稿、單篇文章       | 選用；Typst 原生，僅隨頁註                     |
+| `large-note.typ`     | 整學年筆記、長篇報告：在「壹、」之上分「章」 | 同上                                           |
+| `academic-paper.typ` | 投稿用學術論文：中英封面、摘要、參考文獻     | 必用；citrus + note 式 CSL；BibTeX 或 CSL-JSON |
 
 三者共用 `common.typ` 中的字體、行內樣式、註腳與標題編號，因此外觀一致。`common.typ` 不是入口檔，請勿直接匯入。
 
@@ -81,7 +81,7 @@ typst watch note.typ       # 監看檔案，存檔即重新編譯
 #import "typst-basic-zh/academic-paper.typ": *
 
 #show: project.with(
-  bib: read("ref.bib"),
+  bib: "/ref.bib",                  // 或 "/references.json"
   csl: read("law-journals-citation-example.csl"),
   title: "誠實信用原則與衡平法之性質及功能",
   authors: (name: "何孝元", thanks: "臺灣省立中興大學法律學系系主任。"),
@@ -99,7 +99,11 @@ typst watch note.typ       # 監看檔案，存檔即重新編譯
 ]
 ```
 
-`bib` 與 `csl` 必須由你的文件自己 `read()` 後傳入。若改由模板讀取，路徑會以模板所在的資料夾為準，模板放在 submodule 時就找不到你的檔案。
+`bib` 傳入書目檔的**路徑**，模板依副檔名決定格式：`.json` 為 CSL-JSON，其餘為 BibTeX。檔案開頭的 UTF-8 BOM 會自動去除。
+
+路徑請以 `/` 開頭，代表專案根目錄（`typst compile` 預設為你編譯的主文件所在資料夾）。檔案由模板讀取，不以 `/` 開頭的路徑會以模板所在資料夾為準，模板放在 submodule 時就找不到你的檔案。
+
+`csl` 則必須由你的文件自己 `read()` 後傳入內容。
 
 ## 參數說明
 
@@ -117,17 +121,17 @@ typst watch note.typ       # 監看檔案，存檔即重新編譯
 
 ### `academic-paper.typ`
 
-| 參數                                | 型別             | 預設值 | 說明                                                        |
-| ----------------------------------- | ---------------- | ------ | ----------------------------------------------------------- |
-| `bib`                               | 字串             | —      | **必填**。`read("ref.bib")` 讀出的 BibTeX 內容。            |
-| `csl`                               | 字串             | —      | **必填**。`read("xxx.csl")` 讀出的 CSL 內容，應為 note 式。 |
-| `title`、`title-thanks`、`subtitle` |                  |        | 同上表。                                                    |
-| `title-en`                          | 字串／`none`     | `none` | 英文標題。不填則不產生英文封面頁。                          |
-| `title-en-thanks`、`subtitle-en`    | 內容／`none`     | `none` | 英文標題註解、英文副標題。                                  |
-| `authors`                           | 字串／字典／陣列 | `()`   | 中文作者。                                                  |
-| `authors-en`                        | 字串／字典／陣列 | `()`   | 英文作者。不填則沿用 `authors`。                            |
-| `abstract-zh`、`abstract-en`        | 內容             | `[]`   | 中、英文摘要。留空則不輸出。                                |
-| `keywords-zh`、`keywords-en`        | 字串／`none`     | `none` | 中、英文關鍵字。                                            |
+| 參數                                | 型別             | 預設值 | 說明                                                                    |
+| ----------------------------------- | ---------------- | ------ | ----------------------------------------------------------------------- |
+| `bib`                               | 字串             | —      | **必填**。書目檔路徑，以 `/` 開頭；`.json` 為 CSL-JSON，其餘為 BibTeX。 |
+| `csl`                               | 字串             | —      | **必填**。`read("xxx.csl")` 讀出的 CSL 內容，應為 note 式。             |
+| `title`、`title-thanks`、`subtitle` |                  |        | 同上表。                                                                |
+| `title-en`                          | 字串／`none`     | `none` | 英文標題。不填則不產生英文封面頁。                                      |
+| `title-en-thanks`、`subtitle-en`    | 內容／`none`     | `none` | 英文標題註解、英文副標題。                                              |
+| `authors`                           | 字串／字典／陣列 | `()`   | 中文作者。                                                              |
+| `authors-en`                        | 字串／字典／陣列 | `()`   | 英文作者。不填則沿用 `authors`。                                        |
+| `abstract-zh`、`abstract-en`        | 內容             | `[]`   | 中、英文摘要。留空則不輸出。                                            |
+| `keywords-zh`、`keywords-en`        | 字串／`none`     | `none` | 中、英文關鍵字。                                                        |
 
 ### 作者（`authors`）
 
@@ -244,10 +248,14 @@ bib: "ref.yml",
 ### 原本使用獨立的 `template_basicPaper.typ`
 
 1. 匯入路徑改為 `typst-basic-zh/academic-paper.typ`。
-2. 在 `project.with(...)` 中加上 `bib: read("ref.bib")` 與 `csl: read("你的樣式.csl")`。
+2. 在 `project.with(...)` 中加上 `bib: "/ref.bib"`（或 `"/references.json"`）與 `csl: read("你的樣式.csl")`。
 3. 原專案資料夾中的 `template_basicPaper.typ` 可以刪除。
 
 差異：巢狀編號清單的第二層由 `1.` 改為 `(1)`；參考文獻不再重複列出英文文獻、分組編號從「一、」起算、空分組不輸出。
+
+### 原本以 `bib: read("ref.bib")` 傳入書目內容
+
+`academic-paper.typ` 的 `bib` 已改為傳入路徑，請將 `bib: read("ref.bib")` 改為 `bib: "/ref.bib"`。
 
 ## 更新 submodule
 
