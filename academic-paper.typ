@@ -4,7 +4,7 @@
 // note-style CSL citations, and a categorized bibliography.
 
 #import "common.typ": *
-#import "@preview/citrus:0.2.1": csl-bibliography, get-cited-entries, init-csl, multicite
+#import "@preview/citrus:0.2.1": csl-bibliography, get-cited-entries, init-csl, init-csl-json, multicite
 
 // ============================================================
 // § 腳註內引用指令（非遞迴版）
@@ -51,10 +51,15 @@
 // ============================================================
 #let project(
   // ── 引註資料（必填）/ Citation data (required) ──
-  // 請由呼叫端讀檔後傳入字串，例如 bib: read("ref.bib")、csl: read("tssci-q1-law.csl")。
-  // 若在模板內 read()，路徑會以模板所在目錄為準，submodule 下會找不到檔案。
-  // Pass file contents read by the caller, e.g. bib: read("ref.bib"), csl: read("style.csl").
-  // A read() inside the template would resolve against the template's directory.
+  // bib：書目檔路徑，依副檔名決定格式：.json 為 CSL-JSON，其餘為 BibTeX。
+  //   檔案由本模板讀取，請以「/」開頭表示專案根目錄，例如 bib: "/references.json"；
+  //   不以「/」開頭時，會以本模板所在目錄為準，submodule 下會找不到檔案。
+  // bib: path to the bibliography file; the extension decides the format:
+  //   .json is CSL-JSON, anything else is BibTeX. This template reads the file,
+  //   so start the path with "/" for the project root, e.g. bib: "/references.json";
+  //   otherwise it resolves against this template's directory.
+  // csl：由呼叫端讀檔後傳入內容，例如 csl: read("tssci-q1-law.csl")。
+  // csl: file contents read by the caller, e.g. csl: read("style.csl").
   bib: none,
   csl: none,
 
@@ -80,17 +85,19 @@
 
   body,
 ) = {
-  assert(bib != none, message: "academic-paper: 請傳入 bib: read(\"ref.bib\") / pass bib: read(\"ref.bib\")")
+  assert(bib != none, message: "academic-paper: 請傳入 bib: \"/ref.bib\" / pass bib: \"/ref.bib\"")
   assert(csl != none, message: "academic-paper: 請傳入 csl: read(\"style.csl\") / pass csl: read(\"style.csl\")")
 
-  show: init-csl.with(
-    bib,
-    csl,
-    locales: (:),
-    // auto-links 會把整筆註腳加上連結到參考文獻區
-    // auto-links would link each whole footnote to the bibliography
-    auto-links: false,
-  )
+  let init = if bib.ends-with(".json") { init-csl-json } else { init-csl }
+  // 去除開頭的 UTF-8 BOM：Windows 上部分工具（如 Windows PowerShell 5.1 的
+  // Out-File -Encoding utf8）會寫入 BOM，citrus 解析 JSON 時會因此失敗。
+  // Strip a leading UTF-8 BOM: some Windows tools write one, and citrus
+  // then fails to parse the JSON.
+  let data = read(bib).trim("\u{feff}", at: start)
+
+  // auto-links 會把整筆註腳加上連結到參考文獻區
+  // auto-links would link each whole footnote to the bibliography
+  show: init.with(data, csl, locales: (:), auto-links: false)
 
   show: common-style.with(title: title, authors: authors)
 
