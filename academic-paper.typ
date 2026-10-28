@@ -46,6 +46,24 @@
 }
 
 // ============================================================
+// § Footnote-citation shorthand
+//
+//   [Purpose] Equivalent to #footnote[#ncite(...)。]: a footnote that
+//   contains exactly one citation.
+//
+//   【Usage】 Same arguments as ncite
+//   #ncitef("bibKey")
+//   #ncitef("bibKey", "頁5")
+//   #ncitef("bibKey", "頁5", prefix: "可參照", suffix: "之不同語境")
+//
+//   [Note] The trailing "。" is appended automatically; avoid ending
+//   suffix with punctuation.
+// ============================================================
+#let ncitef(bibKey, ..args, prefix: none, suffix: none) = footnote[
+  #ncite(bibKey, ..args, prefix: prefix, suffix: suffix)。
+]
+
+// ============================================================
 // § 主模板函式
 // § Main template function
 // ============================================================
