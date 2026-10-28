@@ -51,16 +51,20 @@
 //   [Purpose] Equivalent to #footnote[#ncite(...)。]: a footnote that
 //   contains exactly one citation.
 //
-//   【Usage】 Same arguments as ncite
+//   【Usage】 Same arguments as ncite, plus period
 //   #ncitef("bibKey")
 //   #ncitef("bibKey", "頁5")
 //   #ncitef("bibKey", "頁5", prefix: "可參照", suffix: "之不同語境")
+//   #ncitef("bibKey", "at 5", period: ".")   // 英文文獻：半形句號 / English source: half-width period
+//   #ncitef("bibKey", period: none)          // 不加句號 / No trailing period
 //
-//   [Note] The trailing "。" is appended automatically; avoid ending
-//   suffix with punctuation.
+//   【注意】period 預設為全形「。」，會接在 suffix 之後；
+//   若 suffix 已以標點結尾，請傳入 period: none，以免重複。
+//   [Note] period defaults to "。" and follows suffix; if suffix already
+//   ends with punctuation, pass period: none to avoid doubling.
 // ============================================================
-#let ncitef(bibKey, ..args, prefix: none, suffix: none) = footnote[
-  #ncite(bibKey, ..args, prefix: prefix, suffix: suffix)。
+#let ncitef(bibKey, ..args, prefix: none, suffix: none, period: "。") = footnote[
+  #ncite(bibKey, ..args, prefix: prefix, suffix: suffix)#period
 ]
 
 // ============================================================
