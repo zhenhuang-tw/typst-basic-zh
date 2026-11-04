@@ -6,7 +6,7 @@
 // This is not an entry point; import basic-note.typ, large-note.typ, or academic-paper.typ instead.
 
 // 中文字型偽粗體 / Fake bold for Chinese fonts
-#import "@preview/cuti:0.4.0": show-cn-fakebold
+#import "@preview/cuti:0.4.0": cn-fakebold
 
 // ============================================================
 // § 字體定義（方便未來抽換特定字型）
@@ -17,6 +17,22 @@
 #let font-kai = ("Times New Roman", "DFKai-SB")
 #let font-yuan = ("TaiwanPearl", "Arial", "Microsoft JhengHei UI") // Source: https://github.com/max32002/TaiwanPearl
 #let font-fsong = ("Zhuque Fangsong (technical preview)", "Times New Roman", "PMingLiU") // Source: https://github.com/TrionesType/zhuque
+
+// Latin-only fonts, skipped when finding the font that sets CJK glyphs
+#let latin-only-fonts = ("times new roman", "arial")
+
+// CJK fonts that ship a real bold face; fake bold is skipped for them
+#let cjk-real-bold-fonts = ("microsoft jhenghei", "microsoft jhenghei ui")
+
+// Apply fake bold only when the CJK font lacks a real bold face; otherwise use the real one
+#let show-cn-fakebold-smart(body) = {
+  show text.where(weight: "bold").or(strong): it => context {
+    let fams = text.font.map(f => lower(if type(f) == dictionary { f.name } else { f }))
+    let cjk-font = fams.find(f => f not in latin-only-fonts)
+    if cjk-font in cjk-real-bold-fonts { it } else { cn-fakebold(it) }
+  }
+  body
+}
 
 // ============================================================
 // § 行內樣式函式
@@ -132,7 +148,7 @@
   // 2. 字體與段落設定 / Font and paragraph setup
   set text(font: font-song, size: 12pt, lang: "zh", region: "tw")
 
-  show: show-cn-fakebold
+  show: show-cn-fakebold-smart
 
   set par(
     first-line-indent: 0em, // 筆記預設不縮排；論文由 academic-paper.typ 覆寫 / Notes default to no indent; overridden by academic-paper.typ
@@ -178,9 +194,9 @@
       width: 100%,
       inset: (bottom: 0.6em),
       grid(
-        columns: (1.25em, 1fr), // 左欄放編號、右欄放內文 / Left: number, right: body
-        text(font: font-hei)[#super[#counter(footnote).display(at: loc)]],
-        it.note.body,
+        columns: (1.25em, 1fr),
+        // 左欄放編號、右欄放內文 / Left: number, right: body
+        text(font: font-hei)[#super[#counter(footnote).display(at: loc)]], it.note.body,
       ),
     )
   }
