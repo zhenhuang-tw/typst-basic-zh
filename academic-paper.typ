@@ -20,28 +20,23 @@
 //
 //   【用法 / Usage】
 //   #ncite("bibKey")
-//   #ncite("bibKey", "頁5")
-//   #ncite("bibKey", "頁5", prefix: "可參照", suffix: "之不同語境")
+//   #ncite("bibKey", "5")
+//   #ncite("bibKey", "12-19", prefix: "可參照", suffix: "之不同語境")
 //
 //   【範例 / Example】
 //   #footnote[
-//     #ncite("WangZeJian2025", "頁12", prefix: "可參照")；
-//     並請比對 #ncite("LiRenMiao2023", "頁7", suffix: "之不同語境")。
+//     #ncite("WangZeJian2025", "12", prefix: "可參照")；
+//     並請比對 #ncite("LiRenMiao2023", "7-13", suffix: "之不同語境")。
 //   ]
 // ============================================================
 #let ncite(bibKey, ..args, prefix: none, suffix: none) = {
   let location = args.pos().at(0, default: none)
-
   if prefix != none { prefix }
-
-  // 以獨立作用域 [ ... ] 讓 show rule 只作用於這筆引用；內部不可有空行，以免產生 parbreak
-  // An isolated scope [ ... ] limits the show rules to this citation; no blank lines inside, to avoid parbreaks
-  [#show regex("[。.]?\s*[(]"): "" // 消除作者後的句號與左括號 / Remove the period and "(" after the author
-    #show regex("[。.]?[)]$"): "" // 消除句尾的句號與右括號 / Remove the trailing period and ")"
-    #if location != none { cite(label(bibKey), supplement: location, form: "prose") } else {
-      cite(label(bibKey), form: "prose")
-    } ]
-
+  if location != none {
+    cite(label(bibKey), supplement: location, form: "prose")
+  } else {
+    cite(label(bibKey), form: "prose")
+  }
   if suffix != none { suffix }
 }
 
@@ -53,9 +48,10 @@
 //
 //   【Usage】 Same arguments as ncite, plus period
 //   #ncitef("bibKey")
-//   #ncitef("bibKey", "頁5")
-//   #ncitef("bibKey", "頁5", prefix: "可參照", suffix: "之不同語境")
-//   #ncitef("bibKey", "at 5", period: ".")   // 英文文獻：半形句號 / English source: half-width period
+//   #ncitef("bibKey", "5")
+//   #ncitef("bibKey", "15-26, 37-48", prefix: "可參照", suffix: "之不同語境")
+//   #ncitef(prefix: emph("See")+" ", "schauer2012", "36-54, 85-96", period: ".") // 英文信號詞需自帶空格 English signals need their own space
+//   #ncitef("bibKey", "5", period: ".")   // 英文文獻：半形句號 / English source: half-width period
 //   #ncitef("bibKey", period: none)          // 不加句號 / No trailing period
 //
 //   【注意】period 預設為全形「。」，會接在 suffix 之後；
@@ -63,9 +59,12 @@
 //   [Note] period defaults to "。" and follows suffix; if suffix already
 //   ends with punctuation, pass period: none to avoid doubling.
 // ============================================================
-#let ncitef(bibKey, ..args, prefix: none, suffix: none, period: "。") = footnote[
-  #ncite(bibKey, ..args, prefix: prefix, suffix: suffix)#period
-]
+#let ncitef(bibKey, ..args, prefix: none, suffix: none, period: "。") = footnote[#ncite(
+    bibKey,
+    ..args,
+    prefix: prefix,
+    suffix: suffix,
+  )#period]
 
 // ============================================================
 // § 主模板函式
