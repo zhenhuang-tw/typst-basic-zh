@@ -1,18 +1,19 @@
 # typst-basic-zh
 
-適用於 [Typst](https://typst.app/) 的繁體中文排版模板，提供三個入口檔：
+適用於 [Typst](https://typst.app/) 的繁體中文筆記模板，提供兩個入口檔：
 
-| 入口檔               | 用途                                         | 引註方式                                       |
-| -------------------- | -------------------------------------------- | ---------------------------------------------- |
-| `basic-note.typ`     | 課堂筆記、讀書摘要、公文草稿、單篇文章       | 選用；Typst 原生，僅隨頁註                     |
-| `large-note.typ`     | 整學年筆記、長篇報告：在「壹、」之上分「章」 | 同上                                           |
-| `academic-paper.typ` | 投稿用學術論文：中英封面、摘要、參考文獻     | 必用；citrus + note 式 CSL；BibTeX 或 CSL-JSON |
+| 入口檔           | 用途                                         | 引註方式                   |
+| ---------------- | -------------------------------------------- | -------------------------- |
+| `basic-note.typ` | 課堂筆記、讀書摘要、公文草稿、單篇文章       | 選用；Typst 原生，僅隨頁註 |
+| `large-note.typ` | 整學年筆記、長篇報告：在「壹、」之上分「章」 | 同上                       |
 
-三者共用 `common.typ` 中的字體、行內樣式、註腳與標題編號，因此外觀一致。`common.typ` 不是入口檔，請勿直接匯入。
+兩者共用 `common.typ` 中的字體、行內樣式、註腳與標題編號。`common.typ` 不是入口檔，文件請勿直接匯入。
+
+投稿用學術論文（中英封面、摘要、citrus 引註、分類參考文獻）的模板已獨立為 [typst-ntulj](https://github.com/zhenhuang-tw/typst-ntulj)。該模板以 submodule 引入本專案並沿用 `common.typ`，因此兩者外觀一致。
 
 ## 環境需求
 
-1. [Typst](https://github.com/typst/typst#installation) 0.14 以上（`academic-paper.typ` 使用的 citrus 0.2.1 要求 0.14）。
+1. [Typst](https://github.com/typst/typst#installation) 0.14 以上。
 2. 建議安裝下列字型。缺少時 Typst 會以其他字型替補，但外觀會不同：
    - Times New Roman、Arial
    - 微軟正黑體（`Microsoft JhengHei UI`）
@@ -20,7 +21,7 @@
    - [TaiwanPearl 台灣圓體](https://github.com/max32002/TaiwanPearl) 的 Light 版本（`#hypo` 使用）
    - [Zhuque Fangsong 朱雀仿宋](https://github.com/TrionesType/zhuque)（`#thought` 使用）
 
-首次編譯時，Typst 會自動下載 `@preview/cuti`；使用 `academic-paper.typ` 時另會下載 `@preview/citrus`。
+首次編譯時，Typst 會自動下載 `@preview/cuti`。
 
 ## 安裝
 
@@ -75,39 +76,9 @@ typst watch note.typ       # 監看檔案，存檔即重新編譯
 === 小結        // 一、小結
 ```
 
-### 學術論文（`academic-paper.typ`）
-
-```typ
-#import "typst-basic-zh/academic-paper.typ": *
-
-#show: project.with(
-  bib: "/ref.bib",                  // 或 "/references.json"
-  csl: read("law-journals-citation-example.csl"),
-  title: "誠實信用原則與衡平法之性質及功能",
-  authors: (name: "何孝元", thanks: "臺灣省立中興大學法律學系系主任。"),
-  abstract-zh: [本文探討……],
-  keywords-zh: "誠實信用原則、衡平法",
-  title-en: "On Proportionality in Public Law",
-  abstract-en: [This article examines ...],
-  keywords-en: "Public Law, Proportionality",
-)
-
-= 緒論
-
-本文探討@WangZeJian2025。#footnote[
-  #ncite("LiRenMiao2023", "頁7", prefix: "可參照")。
-]
-```
-
-`bib` 傳入書目檔的**路徑**，模板依副檔名決定格式：`.json` 為 CSL-JSON，其餘為 BibTeX。檔案開頭的 UTF-8 BOM 會自動去除。
-
-路徑請以 `/` 開頭，代表專案根目錄（`typst compile` 預設為你編譯的主文件所在資料夾）。檔案由模板讀取，不以 `/` 開頭的路徑會以模板所在資料夾為準，模板放在 submodule 時就找不到你的檔案。
-
-`csl` 則必須由你的文件自己 `read()` 後傳入內容。
-
 ## 參數說明
 
-各入口檔的主函式都叫 `project`，以 `#show: project.with(...)` 套用。
+兩個入口檔的主函式都叫 `project`，參數相同，以 `#show: project.with(...)` 套用。
 
 ### `basic-note.typ`、`large-note.typ`
 
@@ -118,20 +89,6 @@ typst watch note.typ       # 監看檔案，存檔即重新編譯
 | `subtitle`     | 內容／`none`        | `none` | 副標題。                                             |
 | `authors`      | 字串／字典／陣列    | `()`   | 作者，寫法見下節。                                   |
 | `bib`          | 字串／bytes／`none` | `none` | 參考文獻（`.yml` 或 `.bib`）。不傳則不載入，見下節。 |
-
-### `academic-paper.typ`
-
-| 參數                                | 型別             | 預設值 | 說明                                                                    |
-| ----------------------------------- | ---------------- | ------ | ----------------------------------------------------------------------- |
-| `bib`                               | 字串             | —      | **必填**。書目檔路徑，以 `/` 開頭；`.json` 為 CSL-JSON，其餘為 BibTeX。 |
-| `csl`                               | 字串             | —      | **必填**。`read("xxx.csl")` 讀出的 CSL 內容，應為 note 式。             |
-| `title`、`title-thanks`、`subtitle` |                  |        | 同上表。                                                                |
-| `title-en`                          | 字串／`none`     | `none` | 英文標題。不填則不產生英文封面頁。                                      |
-| `title-en-thanks`、`subtitle-en`    | 內容／`none`     | `none` | 英文標題註解、英文副標題。                                              |
-| `authors`                           | 字串／字典／陣列 | `()`   | 中文作者。                                                              |
-| `authors-en`                        | 字串／字典／陣列 | `()`   | 英文作者。不填則沿用 `authors`。                                        |
-| `abstract-zh`、`abstract-en`        | 內容             | `[]`   | 中、英文摘要。留空則不輸出。                                            |
-| `keywords-zh`、`keywords-en`        | 字串／`none`     | `none` | 中、英文關鍵字。                                                        |
 
 ### 作者（`authors`）
 
@@ -165,57 +122,30 @@ bib: "ref.yml",
 
 傳入字串時，Typst 會以**模板檔所在資料夾**解析路徑；在 submodule 架構下會指向 `typst-basic-zh/ref.yml`，因此請改傳 bytes。
 
-### 論文的引註與參考文獻
-
-`academic-paper.typ` 使用 [citrus](https://typst.app/universe/package/citrus) 搭配 note 式 CSL，`@key` 會自動產生腳註。
-
-為配合法學引註常須加註前後短語（例如 _The Bluebook_ 前面要有信號詞，後面常會括註該文主要立場者），本模板預設搭配的 CSL 格式不輸出結尾句號。故若使用 `@key`，將無法產生結尾句號。若需要結尾句號，建議使用 `#ncitef`（footnote + ncite 之意），其參數與 `#ncite` 相同，效果相當於 `#footnote[#ncite(...)。]`。
-
-`#ncitef` 的句號預設為全形「。」。引註英文文獻時，可用 `period` 參數改為半形句號：`#ncitef("key", "at 5", period: ".")`。若 `suffix` 已自帶標點，或不需要句號，請傳入 `period: none`。
-
-**腳註內的引用請用 `#ncite`**。在 `#footnote[...]` 裡寫 `@key`，會在腳註裡再產生一個腳註。`#ncite` 改以行內格式輸出：
-
-```typ
-#ncite("bibKey")
-#ncite("bibKey", "頁5")
-#ncite("bibKey", "頁5", prefix: "可參照", suffix: "之不同語境")
-```
-
-文末參考文獻依語言與類型分組。沒有文獻的分組不輸出；全文沒有任何引用時，整個參考文獻章節都不輸出：
-
-```
-參考文獻
-一、英文文獻
-二、中文文獻
-  (一) 期刊論文
-  (二) 其他
-```
-
 ## 行內樣式函式
 
-三個入口檔都會一併匯出下列函式：
+兩個入口檔都會一併匯出下列函式：
 
-| 函式           | 用途                     | 範例                           |
-| -------------- | ------------------------ | ------------------------------ |
-| `keyword`      | 重點強調（原字體加粗）   | `#keyword[重要]`               |
-| `very-keyword` | 非常重要（黑體粗體）     | `#very-keyword[極重要]`        |
-| `hypo`         | 教學設例（圓體）         | `#hypo[假設小明……]`            |
-| `thought`      | 個人想法（仿宋）         | `#thought[我認為……]`           |
-| `inquote`      | 行內引用（楷體）         | `#inquote[被引用之文字]`       |
-| `rightNote`    | 靠右的灰色小字註解       | `#rightNote[（0218 W1 節一）]` |
-| `ncite`        | 腳註內引用（僅論文模板） | 見上節                         |
+| 函式           | 用途                   | 範例                           |
+| -------------- | ---------------------- | ------------------------------ |
+| `keyword`      | 重點強調（原字體加粗） | `#keyword[重要]`               |
+| `very-keyword` | 非常重要（黑體粗體）   | `#very-keyword[極重要]`        |
+| `hypo`         | 教學設例（圓體）       | `#hypo[假設小明……]`            |
+| `thought`      | 個人想法（仿宋）       | `#thought[我認為……]`           |
+| `inquote`      | 行內引用（楷體）       | `#inquote[被引用之文字]`       |
+| `rightNote`    | 靠右的灰色小字註解     | `#rightNote[（0218 W1 節一）]` |
 
 ## 編號規則
 
 ### 標題
 
-| 寫法         | `basic-note`、`academic-paper` | `large-note`                  |
-| ------------ | ------------------------------ | ----------------------------- |
-| `= 標題`     | 壹、標題（置中）               | 第一章 標題（置中、另起新頁） |
-| `== 標題`    | 一、標題                       | 壹、標題                      |
-| `=== 標題`   | (一) 標題                      | 一、標題                      |
-| `==== 標題`  | 1.標題                         | (一) 標題                     |
-| `===== 標題` | (1) 標題                       | 1.標題                        |
+| 寫法         | `basic-note`     | `large-note`                  |
+| ------------ | ---------------- | ----------------------------- |
+| `= 標題`     | 壹、標題（置中） | 第一章 標題（置中、另起新頁） |
+| `== 標題`    | 一、標題         | 壹、標題                      |
+| `=== 標題`   | (一) 標題        | 一、標題                      |
+| `==== 標題`  | 1.標題           | (一) 標題                     |
+| `===== 標題` | (1) 標題         | 1.標題                        |
 
 ### 編號清單
 
@@ -229,14 +159,7 @@ bib: "ref.yml",
 
 ## 版面
 
-**共通**：A4，左右邊距 3cm、上下 2.5cm，頁碼置中；內文新細明體 12pt；腳註文內標籤為黑體上標，頁底採懸掛縮排；圖說置於圖片上方。
-
-| 項目     | 筆記                   | 論文                                                |
-| -------- | ---------------------- | --------------------------------------------------- |
-| 段落     | 不縮排，行距 1.1em     | 首行縮排 2 字，行距 1.2em                           |
-| 首頁     | 標題、作者，其下接目錄 | 中文標題、作者、「<摘要>」、關鍵字                  |
-| 其他前頁 | 無                     | 英文封面與 Abstract（填 `title-en` 時）、獨立目錄頁 |
-| 文末     | 不輸出參考文獻清單     | 分組參考文獻                                        |
+A4，左右邊距 3cm、上下 2.5cm，頁碼置中；內文新細明體 12pt，段落不縮排，行距 1.1em；腳註文內標籤為黑體上標，頁底採懸掛縮排；圖說置於圖片上方。首頁為標題、作者，其下接目錄；文末不輸出參考文獻清單。
 
 ## 從舊版遷移
 
@@ -249,17 +172,16 @@ bib: "ref.yml",
 | `#import "basic-zh.typ": *`       | `#import "basic-note.typ": *`               |
 | 加上 `isLargeReport: true` 的文件 | `#import "large-note.typ": *`，並刪除該參數 |
 
-### 原本使用獨立的 `template_basicPaper.typ`
+### 原本匯入 `academic-paper.typ`
 
-1. 匯入路徑改為 `typst-basic-zh/academic-paper.typ`。
-2. 在 `project.with(...)` 中加上 `bib: "/ref.bib"`（或 `"/references.json"`）與 `csl: read("你的樣式.csl")`。
-3. 原專案資料夾中的 `template_basicPaper.typ` 可以刪除。
+`academic-paper.typ` 已移至 [typst-ntulj](https://github.com/zhenhuang-tw/typst-ntulj)，更新本 submodule 後，匯入它的文件會無法編譯。請在論文專案根目錄執行：
 
-差異：巢狀編號清單的第二層由 `1.` 改為 `(1)`；參考文獻不再重複列出英文文獻、分組編號從「一、」起算、空分組不輸出。
+```powershell
+git submodule add https://github.com/zhenhuang-tw/typst-ntulj.git typst-ntulj
+git submodule update --init --recursive
+```
 
-### 原本以 `bib: read("ref.bib")` 傳入書目內容
-
-`academic-paper.typ` 的 `bib` 已改為傳入路徑，請將 `bib: read("ref.bib")` 改為 `bib: "/ref.bib"`。
+再把 `#import "typst-basic-zh/academic-paper.typ": *` 改為 `#import "typst-ntulj/ntulj.typ": *`。`project`、`ncite`、`ncitef` 的參數都不變。若該專案只用來寫論文，可以接著移除 `typst-basic-zh` submodule。
 
 ## 更新 submodule
 
