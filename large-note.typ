@@ -3,7 +3,7 @@
 // Entry point for large notes: adds a "Chapter N" level above "壹、" and starts each chapter on a new page.
 
 #import "common.typ": *
-#import "basic-note.typ": _note-project
+#import "basic-note.typ": _note-project, hypo, rightNote, thought, very-keyword
 
 #let project(
   title: "", // 標題必填 / Title (required)

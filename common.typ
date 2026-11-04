@@ -38,8 +38,11 @@
 }
 
 // ============================================================
-// § 行內樣式函式
-// § Inline style functions
+// § 行內樣式函式（筆記與論文共用）
+// § Inline style functions (shared by notes and papers)
+//
+//   僅筆記使用的樣式（very-keyword、hypo、thought、rightNote）定義於 basic-note.typ。
+//   Note-only styles (very-keyword, hypo, thought, rightNote) live in basic-note.typ.
 // ============================================================
 
 // 行內引用 / Inline quoting. Example: #inquote[quoted text]
@@ -52,23 +55,6 @@
   set text(weight: "bold")
   content
 }
-// 非常重點強調 / Strong emphasis
-#let very-keyword(content) = {
-  set text(font: font-hei, weight: "bold")
-  content
-}
-// 教學設例 / Hypothetical cases
-#let hypo(content) = {
-  set text(font: font-yuan, weight: "light") // "light": TaiwanPearl's font weight is on the heavy side
-  content
-}
-// 個人想法 / Personal thoughts
-#let thought(content) = {
-  set text(font: font-fsong)
-  content
-}
-// 右側註解 / Right-side note, e.g. #rightNote[(0218 W1 Session 1)]
-#let rightNote(content) = align(right, text(size: 0.9em, fill: luma(90), content))
 
 // ============================================================
 // § 作者與標題區塊

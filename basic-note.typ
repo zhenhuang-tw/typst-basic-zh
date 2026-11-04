@@ -5,6 +5,29 @@
 #import "common.typ": *
 
 // ============================================================
+// § 筆記專用行內樣式函式（論文模板不提供）
+// § Note-only inline style functions (not provided by the paper template)
+// ============================================================
+
+// 非常重點強調 / Strong emphasis
+#let very-keyword(content) = {
+  set text(font: font-hei, weight: "bold")
+  content
+}
+// 教學設例 / Hypothetical cases
+#let hypo(content) = {
+  set text(font: font-yuan, weight: "light") // "light": TaiwanPearl's font weight is on the heavy side
+  content
+}
+// 個人想法 / Personal thoughts
+#let thought(content) = {
+  set text(font: font-fsong)
+  content
+}
+// 右側註解 / Right-side note, e.g. #rightNote[(0218 W1 Session 1)]
+#let rightNote(content) = align(right, text(size: 0.9em, fill: luma(90), content))
+
+// ============================================================
 // § 筆記版面（basic-note 與 large-note 共用，請勿直接呼叫）
 // § Note layout (shared by basic-note and large-note; do not call directly)
 // ============================================================
