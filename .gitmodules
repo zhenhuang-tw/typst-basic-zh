@@ -1,4 +1,0 @@
-[submodule "citrus"]
-	path = citrus
-	url = https://github.com/zhenhuang-tw/citeproc-typst.git
-	branch = fix/note-number-from-footnote-counter
