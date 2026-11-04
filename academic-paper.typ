@@ -4,7 +4,7 @@
 // note-style CSL citations, and a categorized bibliography.
 
 #import "common.typ": *
-#import "@preview/citrus:0.2.1": csl-bibliography, get-cited-entries, init-csl, init-csl-json, multicite
+#import "citrus/lib.typ": csl-bibliography, get-cited-entries, init-csl, init-csl-json, multicite
 
 // ============================================================
 // § 腳註內引用指令（非遞迴版）
