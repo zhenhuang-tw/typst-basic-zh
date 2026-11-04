@@ -2,8 +2,11 @@
 // 共用定義：字體、行內樣式函式、作者與標題區塊、基本排版規則。
 // Shared definitions: fonts, inline style functions, title/author blocks, and base typesetting rules.
 //
-// 本檔不是入口檔，請改為匯入 basic-note.typ、large-note.typ 或 academic-paper.typ。
-// This is not an entry point; import basic-note.typ, large-note.typ, or academic-paper.typ instead.
+// 本檔不是入口檔：文件請匯入 basic-note.typ 或 large-note.typ。
+// 衍生模板（例如 typst-ntulj）會直接匯入本檔，修改既有名稱或參數前請留意相容性。
+// This is not an entry point: documents should import basic-note.typ or large-note.typ.
+// Derived templates (e.g. typst-ntulj) import this file directly, so renaming or
+// changing the parameters of existing definitions is a breaking change.
 
 // 中文字型偽粗體 / Fake bold for Chinese fonts
 #import "@preview/cuti:0.4.0": cn-fakebold
@@ -151,7 +154,7 @@
   show: show-cn-fakebold-smart
 
   set par(
-    first-line-indent: 0em, // 筆記預設不縮排；論文由 academic-paper.typ 覆寫 / Notes default to no indent; overridden by academic-paper.typ
+    first-line-indent: 0em, // 筆記預設不縮排；衍生模板可覆寫 / Notes default to no indent; derived templates may override
     leading: 1.1em,
     justify: true,
     spacing: 1.6em,
@@ -267,11 +270,11 @@
 // § 移除超連結樣式
 // § Strip hyperlink styling
 //
-//   引用（Typst 原生 cite 或 citrus 的 cite）會被包成指向參考文獻
-//   的 link，在註腳中顯示為超連結。以 `show: plain-links` 套用後，
+//   引用（Typst 原生 cite，或衍生模板所用 citrus 的 cite）會被包成
+//   指向參考文獻的 link，在註腳中顯示為超連結。以 `show: plain-links` 套用後，
 //   其後內容的連結一律只輸出文字。請在 outline 之後才套用，
 //   以免目錄失去頁內跳轉。
-//   Citations (native or citrus) are wrapped in links to the
+//   Citations (native, or citrus in derived templates) are wrapped in links to the
 //   bibliography and show up as hyperlinks in footnotes. After
 //   `show: plain-links`, links in the following content render as
 //   plain text. Apply it after the outline so the TOC keeps its jumps.
