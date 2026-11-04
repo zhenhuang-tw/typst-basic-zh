@@ -29,7 +29,7 @@ Typst downloads `@preview/cuti` on first compile.
 Recommended: add the repository as a Git submodule in your project root.
 
 ```powershell
-git submodule add https://codeberg.org/zhenhuang/typst-basic-zh.git typst-basic-zh
+git submodule add https://github.com/zhenhuang-tw/typst-basic-zh.git typst-basic-zh
 ```
 
 Alternatively, copy `common.typ` together with the entry point you need. Both entry points depend on `common.typ`, and `large-note.typ` also depends on `basic-note.typ`.

@@ -30,7 +30,7 @@
 在你的專案根目錄執行：
 
 ```powershell
-git submodule add https://codeberg.org/zhenhuang/typst-basic-zh.git typst-basic-zh
+git submodule add https://github.com/zhenhuang-tw/typst-basic-zh.git typst-basic-zh
 ```
 
 之後以 `#import "typst-basic-zh/basic-note.typ": *` 匯入。以下範例皆假設模板位於 `typst-basic-zh/` 資料夾。
